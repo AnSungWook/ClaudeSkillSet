@@ -1,0 +1,104 @@
+# =============================================================================
+# Claude Skills Kit - 프로젝트 설정
+# =============================================================================
+# 프로젝트에 맞게 수정 후 .claude/skills/config.yaml에 배치하세요.
+# 모든 스킬이 이 파일을 참조합니다.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 프로젝트 기본 정보
+# -----------------------------------------------------------------------------
+project:
+  name: "My Project"
+  root: "/path/to/project"
+
+# -----------------------------------------------------------------------------
+# 인프라 환경 (/db 스킬)
+# -----------------------------------------------------------------------------
+infra:
+  type: docker                        # docker | remote | local | none
+  working_dir: "${project.root}/infra"
+  commands:
+    up: "docker-compose up -d"
+    down: "docker-compose down"
+    reset: "docker-compose down -v && docker-compose up -d"
+    status: "docker-compose ps"
+  services:
+    - name: database
+      type: postgresql
+      host: localhost
+      port: 5432
+      health_check: "pg_isready -h localhost -p 5432"
+    - name: cache
+      type: redis
+      host: localhost
+      port: 6379
+      health_check: "redis-cli ping"
+  migration:
+    tool: flyway                      # flyway | liquibase | prisma | none
+    command: "docker-compose run --rm flyway migrate"
+
+# -----------------------------------------------------------------------------
+# 서버 (/server 스킬)
+# -----------------------------------------------------------------------------
+server:
+  pre_tasks:
+    - name: "코드 생성"
+      command: "./gradlew :common:jooq:generateDslJooq"
+      skip_for: []
+  jvm_opts: ""
+  spring_profile: local
+  modules:
+    - name: api
+      port: 8080
+      path: "${project.root}/api"
+      start: "./gradlew bootRun --args='--spring.profiles.active=local'"
+      stop: "lsof -i :8080 -sTCP:LISTEN -t | xargs kill"
+      build: "./gradlew build"
+      health: "http://localhost:8080/actuator/health"
+      docs:
+        rest_docs: "./gradlew generateRestDocs"
+        swagger: "./gradlew generateOasToSwagger"
+  log_dir: /tmp
+
+# -----------------------------------------------------------------------------
+# E2E 테스트 (/e2e-test 스킬)
+# -----------------------------------------------------------------------------
+test:
+  spec_dir: "${project.root}/docs/specs"
+  auth:
+    type: bearer                      # bearer | basic | api-key | none
+    login_endpoint: "/api/v1/auth/login"
+    login_body: '{"username":"admin","password":"admin"}'
+    token_path: "data.accessToken"
+  curl_opts: "--max-time 10"
+
+# -----------------------------------------------------------------------------
+# 기획 분석 (/analyze-spec 스킬)
+# -----------------------------------------------------------------------------
+spec:
+  output_dir: "${project.root}/docs/specs"
+  confluence:
+    url: ""
+    username: ""
+  google:
+    enabled: false
+
+# -----------------------------------------------------------------------------
+# Jira 연동 (jira-task + analyze-spec + e2e-test 공통)
+# -----------------------------------------------------------------------------
+jira:
+  enabled: false
+  project_key: ""
+  issue_types:
+    epic: "Epic"
+    task: "Task"
+    bug: "Bug"
+    story: "Story"
+  # jira-task 산출물 경로
+  artifacts:
+    plan: "docs/plan"
+    design: "docs/design"
+    test_report: "docs/test"
+    review: "docs/review"
+    status_report: "docs/reports"

@@ -85,7 +85,21 @@ spec:
     enabled: false
 
 # -----------------------------------------------------------------------------
-# Jira 연동 (jira-task + analyze-spec + e2e-test 공통)
+# 구현 워크플로우
+# skills/workflows/ 하위에서 해당 워크플로우 스킬을 사용
+# setup.sh가 선택한 워크플로우를 .claude/skills/에 심링크/복사
+# -----------------------------------------------------------------------------
+workflow:
+  type: jira-task                     # jira-task | github-task | linear-task | standalone
+  artifacts:
+    plan: "docs/plan"
+    design: "docs/design"
+    test_report: "docs/test"
+    review: "docs/review"
+    status_report: "docs/reports"
+
+# -----------------------------------------------------------------------------
+# Jira 연동 (workflow.type = jira-task 일 때)
 # -----------------------------------------------------------------------------
 jira:
   enabled: false
@@ -95,10 +109,22 @@ jira:
     task: "Task"
     bug: "Bug"
     story: "Story"
-  # jira-task 산출물 경로
-  artifacts:
-    plan: "docs/plan"
-    design: "docs/design"
-    test_report: "docs/test"
-    review: "docs/review"
-    status_report: "docs/reports"
+
+# -----------------------------------------------------------------------------
+# GitHub 연동 (workflow.type = github-task 일 때, 미래 확장)
+# -----------------------------------------------------------------------------
+# github:
+#   enabled: false
+#   repo: "owner/repo"
+#   labels:
+#     epic: "epic"
+#     task: "task"
+#     bug: "bug"
+
+# -----------------------------------------------------------------------------
+# Linear 연동 (workflow.type = linear-task 일 때, 미래 확장)
+# -----------------------------------------------------------------------------
+# linear:
+#   enabled: false
+#   team_id: ""
+#   api_key: ""

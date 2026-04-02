@@ -1,0 +1,37 @@
+{
+  "name": "claude-skills-kit",
+  "version": "0.1.0",
+  "description": "Skill framework that teaches Claude Code your team's rules",
+  "keywords": [
+    "claude-code",
+    "claude",
+    "ai-coding",
+    "developer-tools",
+    "conventions",
+    "code-review",
+    "jira",
+    "workflow"
+  ],
+  "author": "AnSungWook",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnSungWook/ClaudeSkillSet.git"
+  },
+  "bin": {
+    "claude-skills-kit": "bin/install.js"
+  },
+  "files": [
+    "bin/",
+    "agents/",
+    "skills/",
+    "commands/",
+    "hooks/",
+    "templates/",
+    "config.yaml",
+    "setup.sh"
+  ],
+  "engines": {
+    "node": ">=16"
+  }
+}

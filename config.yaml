@@ -90,13 +90,31 @@ spec:
 # setup.sh가 선택한 워크플로우를 .claude/skills/에 심링크/복사
 # -----------------------------------------------------------------------------
 workflow:
-  type: jira-task                     # jira-task | github-task | linear-task | standalone
+  type: jira-task                     # jira-task | task | github-task | linear-task
   artifacts:
+    spec: "docs/specs"
     plan: "docs/plan"
     design: "docs/design"
     test_report: "docs/test"
     review: "docs/review"
     status_report: "docs/reports"
+  # task 워크플로 전용 설정 (workflow.type = task 일 때)
+  # 각 phase에서 사용할 모델과 review 에이전트를 지정
+  models:
+    analyze: opus
+    plan: opus
+    design: opus
+    impl: sonnet
+    review: opus
+    done: sonnet
+    e2e: sonnet
+  review:
+    agents:
+      - code-reviewer
+      - architecture-reviewer
+      - test-reviewer
+      # 프로젝트별 커스텀 에이전트 추가 가능:
+      # - jooq-query-auditor
 
 # -----------------------------------------------------------------------------
 # Jira 연동 (workflow.type = jira-task 일 때)

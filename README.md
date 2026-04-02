@@ -186,37 +186,23 @@ claude-skills-kit/
 
 ---
 
-## Workflow sub-skills
+## Workflows
 
-### task (standalone)
+### task (standalone — no issue tracker needed)
 
-| Sub-skill | Agent | Model | Description |
-|-----------|-------|-------|-------------|
-| `analyze` | — | opus | Convert specs → structured MD |
-| `plan` | plan-analyst | opus | Requirements analysis, planning doc |
-| `design` | design-architect | opus | Pattern search, design doc |
-| `impl` | — | sonnet | Implement based on design |
-| `review` | code/arch/test | opus | 3-agent parallel review |
-| `done` | — | sonnet | Build check + summary |
-| `e2e` | — | sonnet | E2E API tests |
+```
+/task analyze → plan → design → impl → review → done → e2e
+```
 
-### jira-task
+Each phase uses specialized agents (Opus for planning/review, Sonnet for implementation). Review runs 3 agents in parallel: code, architecture, and test.
 
-| Sub-skill | Description |
-|-----------|-------------|
-| `init` | Initialize sprint tasks + worktree setup |
-| `start` | Start task (branch, Jira transition) |
-| `plan` | Planning doc + Jira comment |
-| `design` | Design doc + Jira comment |
-| `impl` | Implementation + Jira comment |
-| `test` | Run tests + report results |
-| `review` | Code review + gap analysis |
-| `merge` | Local branch merge |
-| `pr` | Create PR + link to issue |
-| `done` | Complete task + Jira transition |
-| `auto` | Full workflow auto-execution |
-| `report` | Assigned issues status report |
-| `setup` | MCP initial setup wizard |
+### jira-task (same phases + Jira sync)
+
+```
+/jira-task start → plan → design → impl → test → review → done
+```
+
+Adds Jira status transitions, comments, branch management, PR creation, and sprint reporting on top of the task workflow. 13 sub-skills total — see [Task Workflow Guide](docs/GUIDE-task-workflow.md) for details.
 
 ---
 

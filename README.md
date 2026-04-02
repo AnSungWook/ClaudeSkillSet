@@ -196,13 +196,19 @@ claude-skills-kit/
 
 Each phase uses specialized agents (Opus for planning/review, Sonnet for implementation). Review runs 3 agents in parallel: code, architecture, and test.
 
-### jira-task (same phases + Jira sync)
+### jira-task (plugin — requires [Atlassian MCP](https://github.com/sooperset/mcp-atlassian))
 
 ```
 /jira-task start → plan → design → impl → test → review → done
 ```
 
-Adds Jira status transitions, comments, branch management, PR creation, and sprint reporting on top of the task workflow. 13 sub-skills total — see [Task Workflow Guide](docs/GUIDE-task-workflow.md) for details.
+Same workflow as `task`, plus automatic Jira status transitions, issue comments, branch/PR management, and sprint reporting. Requires the Atlassian MCP server as a plugin:
+
+```bash
+claude mcp add atlassian -- uvx mcp-atlassian --jira-url https://your-org.atlassian.net ...
+```
+
+13 sub-skills total — see [Task Workflow Guide](docs/GUIDE-task-workflow.md) for details.
 
 ---
 

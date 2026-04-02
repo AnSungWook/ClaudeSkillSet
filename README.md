@@ -209,7 +209,13 @@ Same workflow as `task`, plus automatic Jira status transitions, issue comments,
 | [sooperset/mcp-atlassian](https://github.com/sooperset/mcp-atlassian) (community, 4.8k stars) | `claude mcp add atlassian -- uvx mcp-atlassian --jira-url URL ...` |
 | [atlassian/atlassian-mcp-server](https://github.com/atlassian/atlassian-mcp-server) (official) | `npx @anthropic-ai/create-mcp` |
 
-13 sub-skills in [`skills/workflows/jira-task/`](skills/workflows/jira-task/) — see [Task Workflow Guide](docs/GUIDE-task-workflow.md) for details.
+13 sub-skills — install the plugin:
+
+```bash
+claude plugin install jira-integration@jira-claude-code-integration
+```
+
+See [Task Workflow Guide](docs/GUIDE-task-workflow.md) for details.
 
 ---
 

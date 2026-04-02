@@ -3,21 +3,31 @@ name: e2e-test
 description: E2E API 테스트. spec MD + 코드 분석 기반으로 curl 테스트 시나리오를 생성/실행. DB/서버 자동 기동/종료 포함. Use /e2e-test to run end-to-end API tests.
 user-invocable: true
 disable-model-invocation: false
-allowed-tools: Bash, Read, Write, Glob, Grep, Agent, AskUserQuestion, Skill, mcp__atlassian__jira_create_issue, mcp__atlassian__jira_update_issue, mcp__atlassian__jira_get_issue
+allowed-tools: Bash, Read, Write, Glob, Grep, Agent, AskUserQuestion, Skill, mcp__atlassian__jira_create_issue, mcp__atlassian__jira_update_issue, mcp__atlassian__jira_get_issue, mcp__atlassian__jira_search, mcp__postgres__query, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_click, mcp__playwright__browser_type, mcp__playwright__browser_press_key, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_fill_form, mcp__playwright__browser_wait_for, mcp__playwright__browser_close, mcp__playwright__browser_network_requests, mcp__playwright__browser_evaluate
 ---
 
 # E2E API 테스트
 
-spec MD와 코드 구현부를 분석하여 curl 기반 E2E 테스트 시나리오를 자동 생성/실행한다.
+spec MD와 코드 구현부를 분석하여 curl 또는 Playwright 기반 E2E 테스트 시나리오를 자동 생성/실행한다.
 DB, 서버 기동/종료까지 전체 라이프사이클을 관리한다.
 설정은 `config.yaml`의 `test`, `server`, `jira` 섹션을 참조한다.
 
 ## Usage
 
 ```
-/e2e-test {모듈} {spec명}
-/e2e-test api 옵션그룹목록
+/e2e-test {모듈} {spec명}           # curl 기반 E2E
+/e2e-test pw {모듈} {spec명}        # MCP Playwright 브라우저 E2E (Scalar UI)
 ```
+
+## 라우팅
+
+| 입력 | 동작 |
+|------|------|
+| `/e2e-test {모듈} {spec}` | curl 기반 E2E (아래 플로우) |
+| `/e2e-test pw {모듈} {spec}` | MCP Playwright 브라우저 E2E → `pw-mcp.md` |
+
+**`pw` 감지 시**: `pw-mcp.md`를 Read하여 그 지침을 따른다.
+**`pw` 없이 모듈+spec만 전달 시**: 아래 curl 기반 플로우를 실행한다.
 
 ---
 

@@ -29,13 +29,20 @@ claude-skills-kit/
 ├── README.md
 ├── setup.sh                          # 자동 설치 (워크플로우 선택 포함)
 ├── config.yaml                       # 프로젝트별 설정
+├── commands/
+│   └── cleanup-worktree.md           # worktree 정리 커맨드
+├── hooks/
+│   └── guard-merge.sh                # 머지 보호 훅 (baseBranch 검증)
 ├── templates/
-│   └── CLAUDE.md.template            # 프로젝트 규칙 템플릿
+│   ├── CLAUDE.md.template            # 프로젝트 규칙 템플릿
+│   └── settings.json.template        # Claude Code 설정 템플릿 (hooks 포함)
 └── skills/
     ├── analyze-spec/                  # 공통: 기획서 분석
+    │   └── references/               # 서브커맨드 (check-schema, sync-jira)
     ├── db/                            # 공통: 인프라 관리
     ├── server/                        # 공통: 서버 + 빌드
-    ├── e2e-test/                      # 공통: E2E 테스트
+    ├── e2e-test/                      # 공통: E2E 테스트 (curl + Playwright)
+    │   └── pw-mcp.md                 # Playwright MCP 브라우저 테스트
     └── workflows/                     # 구현 워크플로우 (택 1)
         ├── jira-task/                 # Jira 기반 (사용 가능)
         ├── github-task/               # GitHub Issues 기반 (미구현)
@@ -52,7 +59,8 @@ claude-skills-kit/
 | `/analyze-spec` | 기획서/SB → 구조화 MD 변환 (PPT, Google Slides/Docs/Sheets, Confluence) |
 | `/db` | 로컬 인프라 관리 (DB, 캐시 등) |
 | `/server` | 서비스 기동/중지/빌드/상태 관리 |
-| `/e2e-test` | spec + 코드 기반 curl E2E API 테스트 |
+| `/e2e-test` | spec + 코드 기반 E2E API 테스트 (curl + Playwright) |
+| `/cleanup-worktree` | git worktree 정리 (MCP 설정 제거 + 삭제 명령 클립보드 복사) |
 
 ### 구현 워크플로우 (택 1)
 
@@ -94,9 +102,11 @@ bash /path/to/claude-skills-kit/setup.sh
 
 setup.sh가 하는 일:
 1. 공통 스킬 복사 (analyze-spec, db, server, e2e-test)
-2. 워크플로우 선택 → 해당 워크플로우 스킬 복사
-3. config.yaml 생성 (프로젝트 루트 자동 설정)
-4. CLAUDE.md 템플릿 생성 (선택)
+2. 커맨드/훅 복사 (cleanup-worktree, guard-merge)
+3. 워크플로우 선택 → 해당 워크플로우 스킬 복사
+4. config.yaml 생성 (프로젝트 루트 자동 설정)
+5. settings.json 템플릿 생성 (hooks 설정 포함)
+6. CLAUDE.md 템플릿 생성 (선택)
 
 ### 수동 설치
 
@@ -104,13 +114,22 @@ setup.sh가 하는 일:
 # 1. 공통 스킬 복사
 cp -r skills/analyze-spec skills/db skills/server skills/e2e-test .claude/skills/
 
-# 2. 워크플로우 선택하여 복사 (예: jira-task)
+# 2. 커맨드/훅 복사
+mkdir -p .claude/commands .claude/hooks
+cp commands/cleanup-worktree.md .claude/commands/
+cp hooks/guard-merge.sh .claude/hooks/
+chmod +x .claude/hooks/guard-merge.sh
+
+# 3. 워크플로우 선택하여 복사 (예: jira-task)
 cp -r skills/workflows/jira-task .claude/skills/
 
-# 3. config.yaml 복사 후 수정
+# 4. config.yaml 복사 후 수정
 cp config.yaml .claude/skills/config.yaml
 
-# 4. CLAUDE.md 템플릿 복사 후 수정
+# 5. settings.json 템플릿 복사 후 수정
+cp templates/settings.json.template .claude/settings.json
+
+# 6. CLAUDE.md 템플릿 복사 후 수정
 cp templates/CLAUDE.md.template CLAUDE.md
 ```
 
@@ -162,6 +181,7 @@ CLAUDE.md
 | LibreOffice | analyze-spec | `brew install --cask libreoffice` |
 | Docker | db | Docker Desktop |
 | curl + python3 | e2e-test | 기본 내장 |
+| Playwright MCP | e2e-test (pw) | `.mcp.json`에 `@playwright/mcp` 등록 |
 | Jira MCP | jira-task | `claude mcp add atlassian ...` |
 | Google MCP | analyze-spec | `.mcp.json`에 등록 |
 

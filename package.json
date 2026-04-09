@@ -1,7 +1,7 @@
 {
-  "name": "claude-skills-kit",
-  "version": "0.1.0",
-  "description": "Skill framework that teaches Claude Code your team's rules",
+  "name": "claude-harness-kit",
+  "version": "0.2.0",
+  "description": "Agent team harness that teaches Claude Code your team's rules",
   "keywords": [
     "claude-code",
     "claude",
@@ -19,7 +19,7 @@
     "url": "https://github.com/AnSungWook/ClaudeSkillSet.git"
   },
   "bin": {
-    "claude-skills-kit": "bin/install.js"
+    "claude-harness-kit": "bin/install.js"
   },
   "files": [
     "bin/",

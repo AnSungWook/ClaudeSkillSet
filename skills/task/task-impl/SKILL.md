@@ -52,10 +52,18 @@ design 문서의 **Implementation Plan** 순서를 따라 구현한다.
 - CLAUDE.md와 기존 코드 패턴을 탐색하여 구현
 - 유사한 기존 구현을 Grep으로 찾아 참조
 
-### Step 2.5: Write Tests Alongside Implementation
+### Step 2.5: Write Tests (TDD Mode for Large Changes)
 
-design 문서의 **Test Plan**에 명세된 테스트를 구현과 병행하여 작성.
+**6개 이상 파일 변경** 또는 **복잡한 비즈니스 로직**일 경우 TDD(RED-GREEN-REFACTOR) 모드를 자동 적용:
 
+1. **RED**: 실패하는 테스트 먼저 작성 → 테스트 실행하여 실패 확인
+2. **GREEN**: 테스트를 통과하는 최소한의 코드만 작성
+3. **REFACTOR**: 테스트 통과 상태를 유지하면서 코드 정리 + 프로젝트 컨벤션 맞추기
+
+TDD 적용 제외: 단순 CRUD, 설정 변경, DTO 추가, 컨벤션 수정
+
+**일반 모드** (TDD 비적용 시):
+- design 문서의 **Test Plan**에 명세된 테스트를 구현과 병행하여 작성
 - 기능 코드 작성 후 해당 테스트를 바로 작성
 - 프로젝트의 기존 테스트 프레임워크와 패턴을 따름
 - Test Plan이 없으면 핵심 로직의 단위테스트만 작성

@@ -8,7 +8,8 @@
 |------|----------|------|
 | `CLAUDE.md.template` | `{project}/CLAUDE.md` | 프로젝트 개요 + 포인터 (~50줄). 200줄 이내 유지 권장 |
 | `task-conventions.md.template` | `{project}/.claude/task-conventions.md` | phase별 워크플로 컨벤션 (plan/design/impl/test/review) |
-| `settings.json.template` | `{project}/.claude/settings.json` | Claude Code 권한/환경 설정 |
+| `settings.json.template` | `{project}/.claude/settings.json` | Claude Code 권한/환경 설정 (hooks 5개 + deny list 포함) |
+| `.mcp.json.template` | `{project}/.mcp.json` | MCP 서버 설정 (Jira, PostgreSQL, Playwright) |
 
 ## 컨벤션 분리 원칙
 

@@ -1,22 +1,80 @@
 {
   "permissions": {
     "allow": [
+      "Read",
+      "Write",
+      "Edit",
+      "Grep",
+      "Glob",
       "Bash(git:*)",
       "Bash(npx:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(gh:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(touch:*)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force *)",
+      "Bash(git reset --hard *)",
+      "Bash(git checkout . *)",
+      "Bash(git clean *)"
     ]
   },
   "env": {
-    "JIRA_PROJECT_KEY": ""
+    "JIRA_PROJECT_KEY": "",
+    "JIRA_URL": "",
+    "JIRA_USERNAME": ""
   },
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-logger.sh\" session-start",
+            "timeout": 5,
+            "statusMessage": "Loading session context..."
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-logger.sh\" prompt \"${CLAUDE_USER_PROMPT:0:300}\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-logger.sh\" tool \"$CLAUDE_BASH_COMMAND\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/guard-merge.sh",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-merge.sh\"",
             "timeout": 5,
             "statusMessage": "Checking merge target branch..."
           }
@@ -29,7 +87,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "osascript -e 'display notification \"'\"$CLAUDE_NOTIFICATION\"'\" with title \"Claude Code\"' 2>/dev/null || notify-send \"Claude Code\" \"$CLAUDE_NOTIFICATION\" 2>/dev/null || true",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/notify.sh\"",
             "timeout": 5
           }
         ]

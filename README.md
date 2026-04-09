@@ -1,16 +1,16 @@
-# Claude Skills Kit
+# Claude Harness Kit
 
-**Skill framework that teaches Claude Code your team's rules — not the other way around.**
+**Agent team harness that teaches Claude Code your team's rules — not the other way around.**
 
-Claude Code is powerful, but out of the box it doesn't know your coding standards, architecture patterns, review checklists, or deployment workflows. Claude Skills Kit bridges that gap.
+Claude Code is powerful, but out of the box it doesn't know your coding standards, architecture patterns, review checklists, or deployment workflows. Claude Harness Kit bridges that gap with a specialist agent team, structured workflows, and convention-first design.
 
-> Your conventions. Your workflow. Claude just follows.
+> Your conventions. Your agents. Your workflow. Claude just follows.
 
 [![한국어](https://img.shields.io/badge/lang-한국어-blue)](README.ko.md)
 
 ---
 
-## Why Claude Skills Kit?
+## Why Claude Harness Kit?
 
 ### Convention-first
 
@@ -24,7 +24,7 @@ How? Agents read **your** `CLAUDE.md` and `docs/standards/` — not hardcoded ru
 
 Most AI coding tools assume you're starting from scratch. Real teams aren't.
 
-Claude Skills Kit is designed for projects that already have:
+Claude Harness Kit is designed for projects that already have:
 - Established coding standards and architecture patterns
 - Existing CI/CD pipelines and build systems
 - Team conventions that must be followed, not reinvented
@@ -62,18 +62,56 @@ Works inside or outside the workflow:
 | `/db` | Local infrastructure management (Docker, DB, cache) |
 | `/server` | Service start/stop/build/status |
 | `/e2e-test` | E2E API testing (curl + Playwright) |
+| `/propagate-convention` | Propagate new ADR/rules to all agent/skill files |
 | `/cleanup-worktree` | Git worktree cleanup |
+
+### Example skills (tech-specific)
+
+Customizable templates in `skills/examples/`:
+
+| Example | Description | Tech Stack |
+|---------|-------------|------------|
+| `domain-model` | DDD domain model design guide | Spring Boot + jOOQ |
+| `dto-design` | DTO layer separation guide | Spring Boot |
+| `port-adapter` | Hexagonal Architecture guide | Spring Boot + jOOQ |
+| `query-audit` | DB query quality audit | jOOQ |
+| `type-split` | Wide table split + sealed interface | Java 17+ |
+| `test-convention` | Test convention guide | JUnit 5 |
+| `domain-refactor` | Domain code refactoring | DDD + Clean Arch |
+
+Each example has `[CUSTOMIZE]` markers for easy adaptation to your tech stack.
+
+### Hooks
+
+| Hook | Event | Description |
+|------|-------|-------------|
+| `session-logger.sh` | SessionStart, UserPromptSubmit, PostToolUse | Audit trail — logs session start, prompts, git commands to `.worktree.log` |
+| `guard-merge.sh` | PreToolUse(Bash) | Merge guard — blocks merge if current branch != baseBranch |
+| `notify.sh` | Notification | Desktop notification on task completion (macOS/Linux/WSL) |
 
 ---
 
 ## How it works
 
-### Agents = Role + Your Standards
+### Agent Team = Specialists + Your Standards
 
 ```
 Agent  =  Role (what to do)        ← shared (agents/)
         + Standards (how to judge)  ← your project (see below)
 ```
+
+7 specialist agents work as a team:
+
+| Agent | Role | Model |
+|-------|------|-------|
+| `pm` | PM/orchestrator — Jira management, team coordination | opus |
+| `plan-analyst` | Requirements analysis, task breakdown, risk identification | opus |
+| `design-architect` | Technical design, sequence diagrams, no code | opus |
+| `developer` | Implementation — follows existing patterns 100% | sonnet |
+| `code-reviewer` | Coding standards, security, complexity review | opus |
+| `architecture-reviewer` | Layer structure, module boundaries, pattern consistency | opus |
+| `test-reviewer` | Test conventions, coverage, naming | sonnet |
+| `convention-keeper` | Propagates new ADR/rules to all agent/skill files | sonnet |
 
 Agents read your project standards in this order:
 
@@ -159,12 +197,15 @@ claude-skills-kit/
 ├── config.yaml                       # Project settings (server, infra, paths)
 ├── setup.sh                          # Installer script
 │
-├── agents/                           # Shared agents (role only, standards come from your project)
+├── agents/                           # Specialist agent team (8 agents)
+│   ├── pm.md                         #   PM / orchestrator (opus)
 │   ├── plan-analyst.md               #   Planning analysis (opus)
 │   ├── design-architect.md           #   Design (opus)
+│   ├── developer.md                  #   Implementation (sonnet)
 │   ├── code-reviewer.md              #   Coding standards review (opus)
 │   ├── architecture-reviewer.md      #   Architecture review (opus)
-│   └── test-reviewer.md              #   Test conventions (sonnet)
+│   ├── test-reviewer.md              #   Test conventions (sonnet)
+│   └── convention-keeper.md          #   Rule propagation (sonnet)
 │
 ├── skills/
 │   ├── task/                         # Standalone task workflow (no issue tracker needed)
@@ -172,15 +213,23 @@ claude-skills-kit/
 │   ├── server/                       # Server management
 │   ├── db/                           # Infrastructure management
 │   ├── e2e-test/                     # E2E testing
+│   ├── propagate-convention/         # ADR/rule propagation to agent/skill files
+│   ├── examples/                     # Tech-specific example skills (7 examples)
 │   └── workflows/
 │       └── jira-task/                # Jira integration (13 sub-skills)
 │
 ├── commands/
 │   └── cleanup-worktree.md           # Worktree cleanup
 ├── hooks/
-│   └── guard-merge.sh                # Merge guard hook
+│   ├── guard-merge.sh                # Merge guard hook
+│   ├── session-logger.sh             # Session audit trail (3 events)
+│   └── notify.sh                     # Desktop notification
 │
-├── templates/                        # Templates for CLAUDE.md, conventions, settings
+├── templates/                        # Templates for CLAUDE.md, conventions, settings, MCP
+│   ├── CLAUDE.md.template
+│   ├── task-conventions.md.template
+│   ├── settings.json.template        # Hooks + deny list + MCP env vars
+│   └── .mcp.json.template            # Jira, PostgreSQL, Playwright MCP config
 └── docs/                             # Design docs and usage guides
 ```
 

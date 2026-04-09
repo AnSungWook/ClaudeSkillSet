@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# Claude Skills Kit - 자동 설치 스크립트
+# Claude Harness Kit - 자동 설치 스크립트
 # =============================================================================
 # 프로젝트 루트에서 실행하세요: bash /path/to/setup.sh
 # =============================================================================
@@ -12,7 +12,7 @@ PROJECT_ROOT="$(pwd)"
 SKILLS_DIR="$PROJECT_ROOT/.claude/skills"
 
 echo "=========================================="
-echo " Claude Skills Kit Installer"
+echo " Claude Harness Kit Installer"
 echo "=========================================="
 echo ""
 echo "프로젝트 루트: $PROJECT_ROOT"
@@ -130,10 +130,56 @@ else
 fi
 
 # -----------------------------------------------
+# 2.5. Hooks 복사
+# -----------------------------------------------
+echo ""
+echo "[2.5/6] Hooks 복사 중..."
+
+HOOKS_DIR="$PROJECT_ROOT/.claude/hooks"
+mkdir -p "$HOOKS_DIR"
+
+for hook_file in "$SCRIPT_DIR/hooks/"*.sh; do
+    [ -f "$hook_file" ] || continue
+    hook_name=$(basename "$hook_file")
+    target="$HOOKS_DIR/$hook_name"
+
+    if [ -f "$target" ]; then
+        echo "  → $hook_name 이미 존재, 건너뜀"
+    else
+        cp "$hook_file" "$target"
+        chmod +x "$target"
+        echo "  ✅ $hook_name"
+    fi
+done
+
+# -----------------------------------------------
+# 2.6. Example skills 안내
+# -----------------------------------------------
+echo ""
+echo "[2.6/6] 예시 스킬..."
+
+if [ -d "$SCRIPT_DIR/skills/examples" ]; then
+    echo "  기술 특화 예시 스킬이 있습니다:"
+    for ex_dir in "$SCRIPT_DIR/skills/examples"/*/; do
+        [ -d "$ex_dir" ] || continue
+        echo "    - $(basename "$ex_dir")"
+    done
+    read -p "  예시 스킬을 .claude/skills/examples/에 복사할까요? (y/N): " copy_examples
+    if [[ "$copy_examples" == "y" || "$copy_examples" == "Y" ]]; then
+        mkdir -p "$SKILLS_DIR/examples"
+        cp -r "$SCRIPT_DIR/skills/examples/"* "$SKILLS_DIR/examples/"
+        echo "  ✅ 예시 스킬 복사됨 (프로젝트에 맞게 커스터마이즈하세요)"
+    else
+        echo "  → 건너뜀. 나중에 수동으로 복사할 수 있습니다:"
+        echo "    cp -r $SCRIPT_DIR/skills/examples/* $SKILLS_DIR/"
+    fi
+fi
+
+# -----------------------------------------------
 # 3. config.yaml 복사
 # -----------------------------------------------
 echo ""
-echo "[3/5] 설정 파일..."
+echo "[3/6] 설정 파일..."
 
 CONFIG_FILE="$SKILLS_DIR/config.yaml"
 if [ -f "$CONFIG_FILE" ]; then
@@ -164,10 +210,46 @@ else
 fi
 
 # -----------------------------------------------
+# 3.5. settings.json 템플릿 복사
+# -----------------------------------------------
+echo ""
+echo "[3.5/6] settings.json..."
+
+SETTINGS_FILE="$PROJECT_ROOT/.claude/settings.json"
+if [ ! -f "$SETTINGS_FILE" ]; then
+    if [ -f "$SCRIPT_DIR/templates/settings.json.template" ]; then
+        read -p "  settings.json 템플릿을 생성할까요? (hooks + deny list 포함) (y/N): " create_settings
+        if [[ "$create_settings" == "y" || "$create_settings" == "Y" ]]; then
+            cp "$SCRIPT_DIR/templates/settings.json.template" "$SETTINGS_FILE"
+            echo "  ✅ settings.json (hooks 5개 + deny list 포함)"
+        fi
+    fi
+else
+    echo "  → settings.json 이미 존재, 건너뜀"
+fi
+
+# -----------------------------------------------
+# 3.6. .mcp.json 템플릿 안내
+# -----------------------------------------------
+echo ""
+echo "[3.6/6] MCP 서버..."
+
+MCP_FILE="$PROJECT_ROOT/.mcp.json"
+if [ ! -f "$MCP_FILE" ] && [ -f "$SCRIPT_DIR/templates/.mcp.json.template" ]; then
+    read -p "  .mcp.json 템플릿을 생성할까요? (Jira, PostgreSQL, Playwright) (y/N): " create_mcp
+    if [[ "$create_mcp" == "y" || "$create_mcp" == "Y" ]]; then
+        cp "$SCRIPT_DIR/templates/.mcp.json.template" "$MCP_FILE"
+        echo "  ✅ .mcp.json (환경변수를 설정하세요)"
+    fi
+elif [ -f "$MCP_FILE" ]; then
+    echo "  → .mcp.json 이미 존재, 건너뜀"
+fi
+
+# -----------------------------------------------
 # 4. CLAUDE.md 템플릿
 # -----------------------------------------------
 echo ""
-echo "[4/5] 산출물 디렉토리..."
+echo "[4/6] 산출물 디렉토리..."
 
 # 산출물 디렉토리에 README 배치 (각 폴더의 용도 안내)
 DOCS_TEMPLATE_DIR="$SCRIPT_DIR/templates/docs"
@@ -195,7 +277,7 @@ fi
 # 5. CLAUDE.md + task-conventions.md
 # -----------------------------------------------
 echo ""
-echo "[5/5] CLAUDE.md..."
+echo "[5/6] CLAUDE.md..."
 
 CLAUDE_MD="$PROJECT_ROOT/CLAUDE.md"
 if [ ! -f "$CLAUDE_MD" ]; then

@@ -1,5 +1,5 @@
 # =============================================================================
-# Claude Skills Kit - 프로젝트 설정
+# Claude Harness Kit - 프로젝트 설정
 # =============================================================================
 # 프로젝트에 맞게 수정 후 .claude/skills/config.yaml에 배치하세요.
 # 모든 스킬이 이 파일을 참조합니다.
@@ -115,6 +115,23 @@ workflow:
       - test-reviewer
       # 프로젝트별 커스텀 에이전트 추가 가능:
       # - jooq-query-auditor
+  agents:
+    pm: opus
+    plan-analyst: opus
+    design-architect: opus
+    developer: sonnet
+    code-reviewer: opus
+    architecture-reviewer: opus
+    test-reviewer: sonnet
+    convention-keeper: sonnet
+
+# -----------------------------------------------------------------------------
+# Hooks (세션 로깅, 머지 보호, 알림)
+# -----------------------------------------------------------------------------
+hooks:
+  session_logger: true               # 세션 시작/프롬프트/git 명령 감사 로깅
+  guard_merge: true                  # git merge 시 baseBranch 검증
+  notify: true                       # 작업 완료 알림 (macOS/Linux/WSL)
 
 # -----------------------------------------------------------------------------
 # Jira 연동 (workflow.type = jira-task 일 때)

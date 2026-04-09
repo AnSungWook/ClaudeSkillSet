@@ -46,12 +46,20 @@ allowed-tools:
 
 ## 스킬 참조
 
-| 스킬 | 용도 | 적용 시점 |
+에이전트에게 작업을 위임할 때, 해당 에이전트가 참조할 스킬을 함께 안내한다.
+스킬이 설치되어 있으면 에이전트가 SKILL.md의 **필요한 섹션만 세분화하여** 체크리스트/절차/검증 기준으로 활용한다.
+
+| 스킬 | 용도 | 위임 대상 |
 |------|------|----------|
-| `/task` | 전체 워크플로 라우터 | 작업 시작 시 |
-| `/analyze-spec` | 기획서 → 구조화 MD 변환 | 기획 문서/스토리보드 최초 수신 시 |
-| `/propagate-convention` | 새 규칙 전파 | 새 ADR/표준 확립 후 |
-| `/e2e-test` | E2E API 테스트 | 구현 완료 후 풀 커버리지 검증 |
+| `/task` | 전체 워크플로 라우터 | PM 직접 |
+| `/analyze-spec` | 기획서 → 구조화 MD 변환 | plan-analyst |
+| `/propagate-convention` | 새 규칙 전파 | convention-keeper |
+| `/e2e-test` | E2E API 테스트 | developer |
+
+**기술 특화 스킬이 설치된 경우**, developer에게 구현 위임 시 해당 스킬을 참조하도록 안내:
+- `/domain-model`, `/port-adapter`, `/dto-design` → 신규 도메인 구현 시
+- `/test-convention` → 테스트 작성 시
+- `/query-audit` → Repository 구현 후
 
 ## 작업 규모별 워크플로 선택
 

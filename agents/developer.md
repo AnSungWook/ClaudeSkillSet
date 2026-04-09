@@ -30,26 +30,49 @@ allowed-tools:
 
 ## 스킬 참조
 
-구현 시 해당 스킬을 가이드로 활용한다. 스킬이 설치되어 있으면 참조하고, 없으면 CLAUDE.md + 기존 코드 패턴을 따른다.
+구현 시 해당 스킬을 **가이드로 참조**한다. 스킬이 설치되어 있으면 해당 SKILL.md를 Read하여 체크리스트/절차/검증 기준을 따르고, 없으면 CLAUDE.md + 기존 코드 패턴을 따른다.
 
-| 스킬 | 용도 | 적용 시점 |
-|------|------|----------|
-| `/write-plan` (task-plan) | 구현 계획 수립 | 구현 작업 시작 시 |
-| `/propagate-convention` | 새 규칙 전파 | 새 패턴 도입 시 convention-keeper에 위임 |
-| `/e2e-test` | E2E API 테스트 | 구현 완료 후 검증 |
-| `/analyze-spec` | 기획서 분석 | spec 문서 확인 시 |
+### 스킬 참조 방법
 
-프로젝트에 기술 특화 스킬이 설치된 경우 (`skills/examples/`에서 복사):
+스킬 파일을 통째로 읽는 것이 아니라, **필요한 섹션만 세분화하여 참조**한다:
 
-| 스킬 | 용도 | 적용 시점 |
-|------|------|----------|
-| `/domain-model` | Entity/VO/Exception 설계 | 신규 도메인 모듈 구현 시 |
-| `/port-adapter` | Port/Adapter 설계 + 인프라 구현 | Repository/Adapter 구현 시 |
-| `/dto-design` | DTO 계층 분리 설계 | DTO 구현 시 |
-| `/test-convention` | 테스트 코드 컨벤션 | 테스트 코드 작성 시 |
-| `/domain-refactor` | 도메인 리팩토링 절차 | 도메인 품질 리팩토링 시 |
-| `/type-split` | 타입별 분기 컬럼 분리 | wide table 분리 시 |
-| `/query-audit` | DB 쿼리 품질 감사 | Repository 구현 후 |
+```
+1. Read(".claude/skills/{skill}/SKILL.md")로 스킬 내용 확인
+2. 현재 작업에 해당하는 섹션만 추출:
+   - 체크리스트 → 구현 시 검증 항목으로 활용
+   - 절차 → 구현 순서 가이드로 활용
+   - 검증 기준 → 완료 조건으로 활용
+   - 안티패턴 → 금지 패턴으로 활용
+3. 스킬에 references/ 하위 파일이 있으면 필요한 것만 추가 Read
+```
+
+**세분화가 가능한 경우:**
+- 스킬에 체크리스트 항목이 많으면 → 현재 변경 파일과 관련된 항목만 선택
+- 스킬에 여러 단계가 있으면 → 현재 작업에 해당하는 단계만 참조
+- 예시 스킬(`skills/examples/`)이 설치되면 → 프로젝트 기술 스택에 맞는 구체적 체크리스트 활용 가능
+
+### 기본 스킬
+
+| 스킬 | 참조 섹션 | 적용 시점 |
+|------|----------|----------|
+| `/write-plan` (task-plan) | 단계 분해 템플릿, 검증 기준 형식 | 구현 계획 수립 시 |
+| `/propagate-convention` | — (convention-keeper에 위임) | 새 패턴 도입 시 |
+| `/e2e-test` | 테스트 시나리오 형식 | 구현 완료 후 검증 |
+| `/analyze-spec` | 스펙 문서 구조 | spec 문서 확인 시 |
+
+### 기술 특화 스킬 (설치 시)
+
+프로젝트에 `skills/examples/`에서 복사한 스킬이 있으면, 범용 체크리스트 대신 **프로젝트 기술 스택에 맞는 세분화된 체크리스트**를 사용할 수 있다:
+
+| 스킬 | 핵심 참조 섹션 | 적용 시점 |
+|------|--------------|----------|
+| `/domain-model` | 생성 순서(Exception→VO→Entity→CollectionVO), 검증 기준 | 신규 도메인 모듈 |
+| `/port-adapter` | 구조(domain/port/ ↔ infrastructure/adaptor/), 규칙 | Repository/Adapter |
+| `/dto-design` | 3계층 구조(Request/Query/Response), 규칙 | DTO 구현 |
+| `/test-convention` | 테스트 레벨/네이밍/데이터 관리 규칙 | 테스트 작성 |
+| `/domain-refactor` | 안티패턴 목록, 절차 | 도메인 리팩토링 |
+| `/type-split` | 감지 기준, 분리 절차 | wide table 분리 |
+| `/query-audit` | BLOCKER/WARNING/INFO 체크리스트 | Repository 구현 후 |
 
 ## 입력 프로토콜
 

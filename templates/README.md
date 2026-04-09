@@ -11,12 +11,21 @@
 | `settings.json.template` | `{project}/.claude/settings.json` | Claude Code 권한/환경 설정 (hooks 5개 + deny list 포함) |
 | `.mcp.json.template` | `{project}/.mcp.json` | MCP 서버 설정 (Jira, PostgreSQL, Playwright) |
 
-## 컨벤션 분리 원칙
+## docs/ 하위 구조
+
+| 디렉토리 | 복사 방식 | 역할 |
+|----------|----------|------|
+| `docs/adr/` | 디렉토리 + 템플릿 복사 | 의사결정 기록 (Why). ADR-000 템플릿 포함 |
+| `docs/standards/` | 디렉토리 + 템플릿 복사 | 표준 규격 (How). coding/api/testing 템플릿 포함 |
+| `docs/artifacts/` | README만 → `docs/ARTIFACTS.md`로 복사 | 6개 산출물 디렉토리(specs, plan, design, review, test, reports) 가이드 |
+
+## 컨벤션 계층
 
 ```
-CLAUDE.md (~50줄)               ← 프로젝트 개요, 기술 스택, 핵심 패턴, 포인터
+CLAUDE.md (~50줄)               ← 프로젝트 개요, 기술 스택, 핵심 패턴
 .claude/task-conventions.md     ← phase별 컨벤션 (CLAUDE.md에서 분리)
-docs/standards/*.md             ← 상세 규정 (코딩 표준, API 규격 등)
+docs/standards/*.md             ← 상세 표준 규격 (How)
+docs/adr/*.md                   ← 의사결정 기록 (Why)
 ```
 
 CLAUDE.md에 모든 규칙을 넣으면 200줄을 초과하므로,

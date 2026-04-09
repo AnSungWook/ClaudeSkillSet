@@ -251,26 +251,35 @@ fi
 echo ""
 echo "[4/6] 산출물 디렉토리..."
 
-# 산출물 디렉토리에 README 배치 (각 폴더의 용도 안내)
-DOCS_TEMPLATE_DIR="$SCRIPT_DIR/templates/docs"
-if [ -d "$DOCS_TEMPLATE_DIR" ]; then
-    for doc_dir in "$DOCS_TEMPLATE_DIR"/*/; do
-        dir_name=$(basename "$doc_dir")
-        target_dir="$PROJECT_ROOT/docs/$dir_name"
-        if [ ! -d "$target_dir" ]; then
-            mkdir -p "$target_dir"
-            cp "$doc_dir/README.md" "$target_dir/README.md" 2>/dev/null
-            echo "  ✅ docs/$dir_name/ (README 포함)"
-        else
-            # 디렉토리는 있지만 README가 없으면 추가
-            if [ ! -f "$target_dir/README.md" ] && [ -f "$doc_dir/README.md" ]; then
-                cp "$doc_dir/README.md" "$target_dir/README.md"
-                echo "  ✅ docs/$dir_name/README.md 추가"
-            else
-                echo "  → docs/$dir_name/ 이미 존재, 건너뜀"
-            fi
-        fi
-    done
+# 컨벤션 디렉토리 (adr, standards) — 템플릿 포함 복사
+for conv_dir in adr standards; do
+    CONV_SRC="$SCRIPT_DIR/templates/docs/$conv_dir"
+    CONV_TARGET="$PROJECT_ROOT/docs/$conv_dir"
+    if [ -d "$CONV_SRC" ] && [ ! -d "$CONV_TARGET" ]; then
+        cp -r "$CONV_SRC" "$CONV_TARGET"
+        echo "  ✅ docs/$conv_dir/ (템플릿 포함)"
+    else
+        echo "  → docs/$conv_dir/ 이미 존재, 건너뜀"
+    fi
+done
+
+# 워크플로 산출물 디렉토리 — 빈 디렉토리 생성 + 가이드 복사
+ARTIFACT_DIRS="specs plan design review test reports"
+for art_dir in $ARTIFACT_DIRS; do
+    target_dir="$PROJECT_ROOT/docs/$art_dir"
+    if [ ! -d "$target_dir" ]; then
+        mkdir -p "$target_dir"
+        echo "  ✅ docs/$art_dir/"
+    else
+        echo "  → docs/$art_dir/ 이미 존재, 건너뜀"
+    fi
+done
+
+# 산출물 가이드 복사
+ARTIFACTS_GUIDE="$SCRIPT_DIR/templates/docs/artifacts/README.md"
+if [ -f "$ARTIFACTS_GUIDE" ] && [ ! -f "$PROJECT_ROOT/docs/ARTIFACTS.md" ]; then
+    cp "$ARTIFACTS_GUIDE" "$PROJECT_ROOT/docs/ARTIFACTS.md"
+    echo "  ✅ docs/ARTIFACTS.md (산출물 디렉토리 가이드)"
 fi
 
 # -----------------------------------------------

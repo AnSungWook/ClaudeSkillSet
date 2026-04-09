@@ -141,23 +141,25 @@ CLAUDE.md stays under 200 lines by splitting into 3 layers:
 
 ```bash
 # One-liner — run from your project root
-bash <(curl -sL https://raw.githubusercontent.com/AnSungWook/ClaudeSkillSet/main/setup.sh)
+bash <(curl -sL https://raw.githubusercontent.com/AnSungWook/ClaudeHarnessKit/main/setup.sh)
 ```
 
 Or clone manually:
 
 ```bash
-git clone https://github.com/AnSungWook/ClaudeSkillSet.git /tmp/claude-skills-kit
+git clone https://github.com/AnSungWook/ClaudeHarnessKit.git /tmp/claude-harness-kit
 cd /path/to/your/project
-bash /tmp/claude-skills-kit/setup.sh
+bash /tmp/claude-harness-kit/setup.sh
 ```
 
 The installer will:
-1. Copy shared skills (analyze-spec, db, server, e2e-test)
-2. Choose a workflow (task or jira-task) + copy agents
-3. Generate `config.yaml` with your project root
-4. Create artifact directories (docs/specs, plan, design, review, test, reports)
-5. Generate `CLAUDE.md` + `task-conventions.md` templates
+1. Copy shared skills (analyze-spec, db, server, e2e-test, propagate-convention)
+2. Choose a workflow (task or jira-task) + copy 8 specialist agents
+3. Copy hooks (session-logger, guard-merge, notify)
+4. Generate `config.yaml`, `settings.json`, `.mcp.json` with your project settings
+5. Create convention directories (`docs/adr/`, `docs/standards/` with templates)
+6. Create artifact directories (`docs/specs`, `plan`, `design`, `review`, `test`, `reports`)
+7. Generate `CLAUDE.md` + `task-conventions.md` templates
 
 ---
 
@@ -193,7 +195,7 @@ See [config.yaml](config.yaml) for full options.
 ## Project structure
 
 ```
-claude-skills-kit/
+claude-harness-kit/
 ├── config.yaml                       # Project settings (server, infra, paths)
 ├── setup.sh                          # Installer script
 │
@@ -229,8 +231,15 @@ claude-skills-kit/
 │   ├── CLAUDE.md.template
 │   ├── task-conventions.md.template
 │   ├── settings.json.template        # Hooks + deny list + MCP env vars
-│   └── .mcp.json.template            # Jira, PostgreSQL, Playwright MCP config
+│   ├── .mcp.json.template            # Jira, PostgreSQL, Playwright MCP config
+│   └── docs/
+│       ├── adr/                      # ADR template + guide
+│       ├── standards/                # Coding, API, testing standard templates
+│       └── artifacts/                # Workflow artifact directory guide
 └── docs/                             # Design docs and usage guides
+    ├── GUIDE-task-workflow.md
+    ├── DESIGN-task-workflow.md
+    └── token-optimization-guide.md   # Token usage optimization guide
 ```
 
 ---
@@ -281,10 +290,33 @@ See [Task Workflow Guide](docs/GUIDE-task-workflow.md) for details.
 
 ---
 
+## Recommended plugins
+
+### claude-md-management (Anthropic official)
+
+Manages your `CLAUDE.md` lifecycle — captures session learnings and audits quality.
+
+```bash
+claude plugin install claude-md-management@claude-plugins-official
+```
+
+| Command/Skill | Purpose | When |
+|--------------|---------|------|
+| `/revise-claude-md` | Capture session learnings into CLAUDE.md | End of each session |
+| `claude-md-improver` | Audit CLAUDE.md quality (100-point rubric) | Periodic maintenance |
+
+Why it matters for the harness:
+- Session learnings accumulate in CLAUDE.md → next session doesn't need to rediscover patterns
+- Quality audit keeps CLAUDE.md concise → reduces per-turn token overhead
+- Distinguishes `CLAUDE.md` (team-shared) vs `.claude.local.md` (personal)
+
+---
+
 ## Docs
 
 - [Task Workflow Guide](docs/GUIDE-task-workflow.md) — Usage, convention paths, new project setup
 - [Task Workflow Design](docs/DESIGN-task-workflow.md) — Architecture, detailed specs
+- [Token Optimization Guide](docs/token-optimization-guide.md) — Token usage optimization for harness workflows
 
 ---
 
